@@ -1,4 +1,4 @@
-﻿import warnings
+import warnings
 warnings.filterwarnings('ignore')
 
 import seaborn as sns
@@ -66,9 +66,7 @@ print("Latest current price:", current_price)
 volatility = df["Close"].rolling(window=20).std().iloc[-1]
 print("Current volatility:", volatility)
 
-# Predict the signal for the latest data
-predicted_signal = model.predict(X.iloc[-1].values.reshape(1, -1))
-
+predicted_signal = model.predict(X.iloc[-1, :].values.reshape(1, -1))
 signal = "BUY" if predicted_signal[0] == 1 else "SELL"
 
 print("売買シグナル:", signal)
