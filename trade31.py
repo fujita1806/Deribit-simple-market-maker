@@ -24,7 +24,10 @@ df['y_price'] = df['Close'].shift(-1)
 df['y_price_change'] = df['Close'].shift(-1) - df['Close']
 df['y_flip'] = np.where(df['Close'].shift() - df['Close'] > 0, 1, 0)
 df['y_return'] = np.log(df['Close'].shift(-1) / df['Close'])
-df['y'] = np.where(df['y_price_change'] > 0, 1, 0)
+
+# 株価の上昇と下落を予測するためのラベルを作成
+# 1日後の株価が現在の株価よりも高ければ1（上昇）、低ければ0（下落）とする
+df['y'] = np.where(df['y_price'] > df['Close'], 1, 0)
 
 # データの欠損値を平均値で埋める
 df.fillna(df.mean(), inplace=True)
@@ -66,7 +69,11 @@ print("Latest current price:", current_price)
 volatility = df["Close"].rolling(window=20).std().iloc[-1]
 print("Current volatility:", volatility)
 
-predicted_signal = model.predict(X.iloc[-1, :].values.reshape(1, -1))
+# 最新のデータに対してモデルを使って予測を行う
+predicted_signal = model.predict(X.iloc[-1].values.reshape(1, -1))
+
+# 予測結果に応じて売買シグナルを決める
+# 予測結果が1（上昇）ならBUY、0（下落）ならSELLとする
 signal = "BUY" if predicted_signal[0] == 1 else "SELL"
 
 print("売買シグナル:", signal)
